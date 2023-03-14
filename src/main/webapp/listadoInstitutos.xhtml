@@ -1,0 +1,101 @@
+<ui:composition template="/WEB-INF/plantillas/plantilla.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+	<ui:param name="title" value="ListadoInstitutos" />
+	<ui:define name="contenido">
+		<h:messages globalOnly="true" layout="table" infoClass="advertencia"></h:messages>
+		<h:form prependId="false">
+			<h:panelGroup id="noIes" layout="block">
+				<h:outputText id="outNoIes" value="No hay Ies en el sistema"
+					rendered="#{backingListadoInstitutos.iesPaginado.iesList.size() == 0 || backingListadoInstitutos.iesPaginado.iesList == null}">
+				</h:outputText>
+			</h:panelGroup>
+			<h:panelGroup id="listadoIes" layout="block"
+				rendered="#{backingListadoInstitutos.iesPaginado.iesList.size() > 0}">
+				<h:outputText
+					value="Hay un total de #{backingListadoInstitutos.iesPaginado.totalItems} institutos en #{backingListadoInstitutos.iesPaginado.totalPages} paginas">
+				</h:outputText>
+				<div>&#160;</div>
+				<h:commandLink id="anterior" value="Anterior"
+					rendered="#{backingListadoInstitutos.paginaActual > 0}">
+					<f:ajax render="@form panelOferta"
+						listener="#{backingListadoInstitutos.paginaAnterior()}" />
+				</h:commandLink>
+				<h:commandLink id="siguiente" value="Siguiente"
+					rendered="#{backingListadoInstitutos.paginaActual+1 lt backingListadoInstitutos.iesPaginado.totalPages}">
+					<f:ajax render="@form panelOferta"
+						listener="#{backingListadoInstitutos.paginaSiguiente()}" />
+				</h:commandLink>
+				<h:outputText id="outputPaginaActual"
+					value="Página #{backingListadoInstitutos.paginaActual+1}">
+
+				</h:outputText>
+				<h:dataTable id="tablaIes" name="tablaIes" var="ies"
+					value="#{backingListadoInstitutos.iesPaginado.iesList}">
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="ID IES"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{ies.idies}"></h:outputText>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Nombre"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{ies.nombre}"></h:outputText>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Oferta"></h:outputText>
+						</f:facet>
+						<h:commandButton
+							action="#{backingListadoInstitutos.getOfertaCiclos(ies.idies)}"
+							value="Ver Oferta">
+							<f:ajax render="panelOferta"></f:ajax>
+						</h:commandButton>
+					</h:column>
+				</h:dataTable>
+			</h:panelGroup>
+		</h:form>
+		<h:panelGroup id="panelOferta" layout="block">
+			<h:panelGroup
+				rendered="#{backingListadoInstitutos.listaOferta.size() lt 1 &amp;&amp; backingListadoInstitutos.listaOferta != null}">
+				<h:outputText value="Este instituto no tiene oferta disponible">
+
+				</h:outputText>
+			</h:panelGroup>
+			<h:dataTable id="ofertaEducativa" name="ofertaEducativa" var="oferta"
+				value="#{backingListadoInstitutos.listaOferta}"
+				rendered="#{backingListadoInstitutos.listaOferta != null  &amp;&amp; backingListadoInstitutos.listaOferta.size() gt 0}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="ID Ciclo"></h:outputText>
+					</f:facet>
+					<h:outputText value="#{oferta.ciclo.idciclo}"></h:outputText>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Nombre"></h:outputText>
+					</f:facet>
+					<h:outputText value="#{oferta.ciclo.nombre}"></h:outputText>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Turno"></h:outputText>
+					</f:facet>
+					<h:outputText value="#{oferta.turno.descripcion}"></h:outputText>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Plazas"></h:outputText>
+					</f:facet>
+					<h:outputText value="#{oferta.plazas}"></h:outputText>
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>
